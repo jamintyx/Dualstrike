@@ -27,8 +27,9 @@ class Player {
     this.bullets = [];
 
     this.weapons = {
-      rifle: { cooldown: 20, maxAmmo: 10, ammo: 10, reloadFrames: 90 },
-      smg: { cooldown: 5, maxAmmo: 25, ammo: 25, reloadFrames: 60 }
+      rifle:  { cooldown: 20, maxAmmo: 10, ammo: 10, reloadFrames: 90, damage: 10 },
+      smg:    { cooldown: 5,  maxAmmo: 25, ammo: 25, reloadFrames: 60, damage: 5 },
+      sniper: { cooldown: 60, unlimited: true, damage: 100 } // unlimited = no ammo/reload
     };
   }
 
@@ -44,10 +45,13 @@ class Player {
   switchWeapons() {
     if (keys[this.weaponKeys.rifle]) this.selectedWeapon = "rifle";
     if (keys[this.weaponKeys.smg]) this.selectedWeapon = "smg";
+    if (keys[this.weaponKeys.sniper]) this.selectedWeapon = "sniper";
   }
 
   reload() {
     const weapon = this.weapons[this.selectedWeapon];
+    if (weapon.unlimited) return;
+
     if (keys[this.reloadKey] && weapon.ammo < weapon.maxAmmo && this.reloadTime === 0) {
       this.reloadTime = weapon.reloadFrames;
     }
@@ -61,14 +65,17 @@ class Player {
 
   shoot() {
     const weapon = this.weapons[this.selectedWeapon];
-    if (this.cooldown === 0 && keys[this.shootKey] && weapon.ammo > 0 && this.reloadTime === 0) {
-      this.bullets.push({
-        x: this.x + this.width / 2,
-        y: this.y + this.height / 2,
-        dx: this.color === 'red' ? 5 : -5
-      });
-      this.cooldown = weapon.cooldown;
-      weapon.ammo--;
+    if (this.cooldown === 0 && keys[this.shootKey] && this.reloadTime === 0) {
+      if (weapon.unlimited || weapon.ammo > 0) {
+        this.bullets.push({
+          x: this.x + this.width / 2,
+          y: this.y + this.height / 2,
+          dx: this.color === 'red' ? 6 : -6,
+          damage: weapon.damage
+        });
+        this.cooldown = weapon.cooldown;
+        if (!weapon.unlimited) weapon.ammo--;
+      }
     }
     if (this.cooldown > 0) this.cooldown--;
   }
@@ -84,7 +91,7 @@ class Player {
         b.y > opponent.y &&
         b.y < opponent.y + opponent.height
       ) {
-        opponent.health -= 10;
+        opponent.health -= b.damage;
         this.bullets.splice(i, 1);
       }
     });
@@ -95,14 +102,17 @@ class Player {
     ctx.fillRect(this.x, this.y, this.width, this.height);
 
     const weapon = this.weapons[this.selectedWeapon];
-    const infoY = this.y - 25;
+    const infoY = this.y - 30;
 
     ctx.fillStyle = "white";
     ctx.font = "12px sans-serif";
     ctx.fillText(`HP: ${this.health}`, this.x, this.y - 5);
     ctx.fillText(`Weapon: ${this.selectedWeapon}`, this.x, infoY);
-    ctx.fillText(`Ammo: ${weapon.ammo}/${weapon.maxAmmo}`, this.x, infoY + 10);
-    if (this.reloadTime > 0) ctx.fillText("Reloading...", this.x, infoY + 20);
+
+    if (!weapon.unlimited) {
+      ctx.fillText(`Ammo: ${weapon.ammo}/${weapon.maxAmmo}`, this.x, infoY + 10);
+      if (this.reloadTime > 0) ctx.fillText("Reloading...", this.x, infoY + 20);
+    }
 
     this.bullets.forEach(b => {
       ctx.fillStyle = this.color;
@@ -111,20 +121,13 @@ class Player {
   }
 }
 
-// Define players
 const player1 = new Player(50, 300, "red", {
-  up: "w",
-  down: "s",
-  left: "a",
-  right: "d"
-}, "f", { rifle: "1", smg: "2" }, "r");
+  up: "w", down: "s", left: "a", right: "d"
+}, "f", { rifle: "1", smg: "2", sniper: "3" }, "r");
 
 const player2 = new Player(720, 300, "blue", {
-  up: "arrowup",
-  down: "arrowdown",
-  left: "arrowleft",
-  right: "arrowright"
-}, "l", { rifle: "8", smg: "9" }, "shift");
+  up: "arrowup", down: "arrowdown", left: "arrowleft", right: "arrowright"
+}, "l", { rifle: "8", smg: "9", sniper: "0" }, "shift");
 
 function drawGame() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
