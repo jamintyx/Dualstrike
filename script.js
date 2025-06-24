@@ -6,18 +6,24 @@ document.addEventListener("keydown", e => keys[e.key.toLowerCase()] = true);
 document.addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
 
 class Player {
-  constructor(x, y, color, controls, shootKey) {
+  constructor(x, y, color, controls, shootKey, weaponKeys) {
     this.x = x;
     this.y = y;
     this.color = color;
     this.controls = controls;
     this.shootKey = shootKey;
+    this.weaponKeys = weaponKeys;
     this.width = 30;
     this.height = 30;
     this.speed = 3;
     this.health = 100;
     this.cooldown = 0;
+    this.selectedWeapon = "rifle";
     this.bullets = [];
+    this.weapons = {
+      rifle: { cooldown: 20 },
+      smg: { cooldown: 5 }
+    };
   }
 
   move() {
@@ -29,10 +35,19 @@ class Player {
     this.y = Math.max(0, Math.min(canvas.height - this.height, this.y));
   }
 
+  switchWeapons() {
+    if (keys[this.weaponKeys.rifle]) this.selectedWeapon = "rifle";
+    if (keys[this.weaponKeys.smg]) this.selectedWeapon = "smg";
+  }
+
   shoot() {
     if (this.cooldown === 0 && keys[this.shootKey]) {
-      this.bullets.push({ x: this.x + this.width / 2, y: this.y + this.height / 2, dx: this.color === 'red' ? 5 : -5 });
-      this.cooldown = 20;
+      this.bullets.push({
+        x: this.x + this.width / 2,
+        y: this.y + this.height / 2,
+        dx: this.color === 'red' ? 5 : -5
+      });
+      this.cooldown = this.weapons[this.selectedWeapon].cooldown;
     }
     if (this.cooldown > 0) this.cooldown--;
   }
@@ -59,6 +74,7 @@ class Player {
     ctx.fillRect(this.x, this.y, this.width, this.height);
     ctx.fillStyle = "white";
     ctx.fillText(`HP: ${this.health}`, this.x, this.y - 5);
+    ctx.fillText(`Weapon: ${this.selectedWeapon}`, this.x, this.y - 20);
     this.bullets.forEach(b => {
       ctx.fillStyle = this.color;
       ctx.fillRect(b.x, b.y, 5, 5);
@@ -71,14 +87,14 @@ const player1 = new Player(50, 300, "red", {
   down: "s",
   left: "a",
   right: "d"
-}, "f");
+}, "f", { rifle: "1", smg: "2" });
 
 const player2 = new Player(720, 300, "blue", {
   up: "arrowup",
   down: "arrowdown",
   left: "arrowleft",
   right: "arrowright"
-}, "l");
+}, "l", { rifle: "8", smg: "9" });
 
 function drawGame() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -88,6 +104,9 @@ function drawGame() {
     ctx.fillText(player1.health <= 0 ? "Blue Wins!" : "Red Wins!", 320, 280);
     return;
   }
+
+  player1.switchWeapons();
+  player2.switchWeapons();
 
   player1.move();
   player2.move();
@@ -105,4 +124,3 @@ function drawGame() {
 }
 
 drawGame();
-
