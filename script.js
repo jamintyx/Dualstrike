@@ -27,9 +27,8 @@ class Player {
     this.bullets = [];
 
     this.weapons = {
-      rifle:   { cooldown: 20, maxAmmo: 10, ammo: 10, reloadFrames: 90, damage: 10 },
-      smg:     { cooldown: 5,  maxAmmo: 25, ammo: 25, reloadFrames: 60, damage: 5 },
-      sniper:  { cooldown: 60, maxAmmo: 5,  ammo: 5,  reloadFrames: 120, damage: 100 }
+      rifle: { cooldown: 20, maxAmmo: 10, ammo: 10, reloadFrames: 90 },
+      smg: { cooldown: 5, maxAmmo: 25, ammo: 25, reloadFrames: 60 }
     };
   }
 
@@ -45,7 +44,6 @@ class Player {
   switchWeapons() {
     if (keys[this.weaponKeys.rifle]) this.selectedWeapon = "rifle";
     if (keys[this.weaponKeys.smg]) this.selectedWeapon = "smg";
-    if (keys[this.weaponKeys.sniper]) this.selectedWeapon = "sniper";
   }
 
   reload() {
@@ -67,8 +65,7 @@ class Player {
       this.bullets.push({
         x: this.x + this.width / 2,
         y: this.y + this.height / 2,
-        dx: this.color === 'red' ? 6 : -6,
-        damage: weapon.damage
+        dx: this.color === 'red' ? 5 : -5
       });
       this.cooldown = weapon.cooldown;
       weapon.ammo--;
@@ -87,7 +84,7 @@ class Player {
         b.y > opponent.y &&
         b.y < opponent.y + opponent.height
       ) {
-        opponent.health -= b.damage;
+        opponent.health -= 10;
         this.bullets.splice(i, 1);
       }
     });
@@ -98,7 +95,7 @@ class Player {
     ctx.fillRect(this.x, this.y, this.width, this.height);
 
     const weapon = this.weapons[this.selectedWeapon];
-    const infoY = this.y - 30;
+    const infoY = this.y - 25;
 
     ctx.fillStyle = "white";
     ctx.font = "12px sans-serif";
@@ -114,13 +111,20 @@ class Player {
   }
 }
 
+// Define players
 const player1 = new Player(50, 300, "red", {
-  up: "w", down: "s", left: "a", right: "d"
-}, "f", { rifle: "1", smg: "2", sniper: "3" }, "r");
+  up: "w",
+  down: "s",
+  left: "a",
+  right: "d"
+}, "f", { rifle: "1", smg: "2" }, "r");
 
 const player2 = new Player(720, 300, "blue", {
-  up: "arrowup", down: "arrowdown", left: "arrowleft", right: "arrowright"
-}, "l", { rifle: "8", smg: "9", sniper: "0" }, "shift");
+  up: "arrowup",
+  down: "arrowdown",
+  left: "arrowleft",
+  right: "arrowright"
+}, "l", { rifle: "8", smg: "9" }, "shift");
 
 function drawGame() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
