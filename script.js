@@ -5,7 +5,7 @@ const keys = {};
 document.addEventListener("keydown", e => keys[e.key.toLowerCase()] = true);
 document.addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
 
-// Set volume levels
+// Set volume for each weapon sound
 document.getElementById("sound-sniper").volume = 1.0;
 document.getElementById("sound-rifle").volume = 0.6;
 document.getElementById("sound-smg").volume = 0.3;
@@ -23,7 +23,7 @@ class Player {
     this.width = 30;
     this.height = 30;
     this.speed = 3;
-    this.health = 100;
+    this.health = 350; // Increased health
 
     this.cooldown = 0;
     this.reloadTime = 0;
@@ -34,7 +34,7 @@ class Player {
     this.weapons = {
       rifle:  { cooldown: 20, maxAmmo: 10, ammo: 10, reloadFrames: 90, damage: 10 },
       smg:    { cooldown: 5,  maxAmmo: 25, ammo: 25, reloadFrames: 60, damage: 5 },
-      sniper: { cooldown: 60, unlimited: true, damage: 100 } // sniper has unlimited ammo
+      sniper: { cooldown: 90, unlimited: true, damage: 350 } // One-shot, slow
     };
   }
 
@@ -82,7 +82,7 @@ class Player {
         this.cooldown = weapon.cooldown;
         if (!weapon.unlimited) weapon.ammo--;
 
-        // 🔊 Play sound
+        // 🔊 Play weapon sound
         const soundId = `sound-${this.selectedWeapon}`;
         const audio = document.getElementById(soundId);
         if (audio) {
