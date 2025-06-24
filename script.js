@@ -5,6 +5,11 @@ const keys = {};
 document.addEventListener("keydown", e => keys[e.key.toLowerCase()] = true);
 document.addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
 
+// Set volume levels
+document.getElementById("sound-sniper").volume = 1.0;
+document.getElementById("sound-rifle").volume = 0.6;
+document.getElementById("sound-smg").volume = 0.3;
+
 class Player {
   constructor(x, y, color, controls, shootKey, weaponKeys, reloadKey) {
     this.x = x;
@@ -29,7 +34,7 @@ class Player {
     this.weapons = {
       rifle:  { cooldown: 20, maxAmmo: 10, ammo: 10, reloadFrames: 90, damage: 10 },
       smg:    { cooldown: 5,  maxAmmo: 25, ammo: 25, reloadFrames: 60, damage: 5 },
-      sniper: { cooldown: 60, unlimited: true, damage: 100 } // unlimited = no ammo/reload
+      sniper: { cooldown: 60, unlimited: true, damage: 100 } // sniper has unlimited ammo
     };
   }
 
@@ -38,6 +43,7 @@ class Player {
     if (keys[this.controls.down]) this.y += this.speed;
     if (keys[this.controls.left]) this.x -= this.speed;
     if (keys[this.controls.right]) this.x += this.speed;
+
     this.x = Math.max(0, Math.min(canvas.width - this.width, this.x));
     this.y = Math.max(0, Math.min(canvas.height - this.height, this.y));
   }
@@ -75,6 +81,14 @@ class Player {
         });
         this.cooldown = weapon.cooldown;
         if (!weapon.unlimited) weapon.ammo--;
+
+        // 🔊 Play sound
+        const soundId = `sound-${this.selectedWeapon}`;
+        const audio = document.getElementById(soundId);
+        if (audio) {
+          audio.currentTime = 0;
+          audio.play();
+        }
       }
     }
     if (this.cooldown > 0) this.cooldown--;
