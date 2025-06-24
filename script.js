@@ -5,10 +5,13 @@ const keys = {};
 document.addEventListener("keydown", e => keys[e.key.toLowerCase()] = true);
 document.addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
 
-// Set volume for each weapon sound
-document.getElementById("sound-sniper").volume = 1.0;
-document.getElementById("sound-rifle").volume = 0.6;
-document.getElementById("sound-smg").volume = 0.3;
+// Set audio volumes
+["sniper", "rifle", "smg"].forEach(id => {
+  const audio = document.getElementById("sound-" + id);
+  if (audio) {
+    audio.volume = id === "sniper" ? 1 : id === "rifle" ? 0.6 : 0.3;
+  }
+});
 
 class Player {
   constructor(x, y, color, controls, shootKey, weaponKeys, reloadKey) {
@@ -23,18 +26,16 @@ class Player {
     this.width = 30;
     this.height = 30;
     this.speed = 3;
-    this.health = 350; // Increased health
-
+    this.health = 350;
     this.cooldown = 0;
     this.reloadTime = 0;
     this.selectedWeapon = "rifle";
-
     this.bullets = [];
 
     this.weapons = {
-      rifle:  { cooldown: 20, maxAmmo: 10, ammo: 10, reloadFrames: 90, damage: 10 },
-      smg:    { cooldown: 5,  maxAmmo: 25, ammo: 25, reloadFrames: 60, damage: 5 },
-      sniper: { cooldown: 90, unlimited: true, damage: 350 } // One-shot, slow
+      rifle: { cooldown: 20, maxAmmo: 10, ammo: 10, reloadFrames: 90, damage: 10 },
+      smg: { cooldown: 5, maxAmmo: 25, ammo: 25, reloadFrames: 60, damage: 5 },
+      sniper: { cooldown: 90, unlimited: true, damage: 350 }
     };
   }
 
@@ -43,7 +44,6 @@ class Player {
     if (keys[this.controls.down]) this.y += this.speed;
     if (keys[this.controls.left]) this.x -= this.speed;
     if (keys[this.controls.right]) this.x += this.speed;
-
     this.x = Math.max(0, Math.min(canvas.width - this.width, this.x));
     this.y = Math.max(0, Math.min(canvas.height - this.height, this.y));
   }
@@ -57,15 +57,12 @@ class Player {
   reload() {
     const weapon = this.weapons[this.selectedWeapon];
     if (weapon.unlimited) return;
-
     if (keys[this.reloadKey] && weapon.ammo < weapon.maxAmmo && this.reloadTime === 0) {
       this.reloadTime = weapon.reloadFrames;
     }
     if (this.reloadTime > 0) {
       this.reloadTime--;
-      if (this.reloadTime === 0) {
-        weapon.ammo = weapon.maxAmmo;
-      }
+      if (this.reloadTime === 0) weapon.ammo = weapon.maxAmmo;
     }
   }
 
@@ -83,8 +80,7 @@ class Player {
         if (!weapon.unlimited) weapon.ammo--;
 
         // 🔊 Play weapon sound
-        const soundId = `sound-${this.selectedWeapon}`;
-        const audio = document.getElementById(soundId);
+        const audio = document.getElementById("sound-" + this.selectedWeapon);
         if (audio) {
           audio.currentTime = 0;
           audio.play();
@@ -116,16 +112,14 @@ class Player {
     ctx.fillRect(this.x, this.y, this.width, this.height);
 
     const weapon = this.weapons[this.selectedWeapon];
-    const infoY = this.y - 30;
-
     ctx.fillStyle = "white";
-    ctx.font = "12px sans-serif";
+    ctx.font = "12px monospace";
     ctx.fillText(`HP: ${this.health}`, this.x, this.y - 5);
-    ctx.fillText(`Weapon: ${this.selectedWeapon}`, this.x, infoY);
+    ctx.fillText(`${this.selectedWeapon.toUpperCase()}`, this.x, this.y - 20);
 
     if (!weapon.unlimited) {
-      ctx.fillText(`Ammo: ${weapon.ammo}/${weapon.maxAmmo}`, this.x, infoY + 10);
-      if (this.reloadTime > 0) ctx.fillText("Reloading...", this.x, infoY + 20);
+      ctx.fillText(`Ammo: ${weapon.ammo}/${weapon.maxAmmo}`, this.x, this.y - 35);
+      if (this.reloadTime > 0) ctx.fillText("Reloading...", this.x, this.y - 50);
     }
 
     this.bullets.forEach(b => {
@@ -135,6 +129,7 @@ class Player {
   }
 }
 
+// Player Setup
 const player1 = new Player(50, 300, "red", {
   up: "w", down: "s", left: "a", right: "d"
 }, "f", { rifle: "1", smg: "2", sniper: "3" }, "r");
@@ -148,30 +143,24 @@ function drawGame() {
 
   if (player1.health <= 0 || player2.health <= 0) {
     ctx.fillStyle = "yellow";
-    ctx.font = "30px sans-serif";
-    ctx.fillText(player1.health <= 0 ? "Blue Wins!" : "Red Wins!", 320, 280);
+    ctx.font = "30px monospace";
+    ctx.fillText(player1.health <= 0 ? "Blue Wins!" : "Red Wins!", 300, 280);
     return;
   }
 
   player1.switchWeapons();
   player2.switchWeapons();
 
-  player1.move();
-  player2.move();
-
-  player1.reload();
-  player2.reload();
-
-  player1.shoot();
-  player2.shoot();
-
+  player1.move(); player2.move();
+  player1.reload(); player2.reload();
+  player1.shoot(); player2.shoot();
   player1.updateBullets(player2);
   player2.updateBullets(player1);
 
-  player1.draw();
-  player2.draw();
+  player1.draw(); player2.draw();
 
   requestAnimationFrame(drawGame);
 }
 
 drawGame();
+
