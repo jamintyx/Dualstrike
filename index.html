@@ -3,18 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>2-Player FPS</title>
+  <title>DualStrike FPS</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1 class="title">DualStrike: 2-Player FPS</h1>
+  <h1>DualStrike FPS</h1>
   <canvas id="gameCanvas" width="800" height="600"></canvas>
-  <p class="instructions">Player 1: W/A/S/D + F to shoot | Player 2: Arrow keys + L to shoot</p>
+
+  <!-- Audio Elements -->
+  <audio id="sound-sniper" src="sniper.mp3"></audio>
+  <audio id="sound-rifle" src="rifle.mp3"></audio>
+  <audio id="sound-smg" src="smg.mp3"></audio>
+
+  <!-- Game Script -->
   <script src="script.js"></script>
 </body>
 </html>
-<audio id="sound-sniper" src="sniper.mp3"></audio>
-<audio id="sound-rifle" src="rifle.mp3"></audio>
-<audio id="sound-smg" src="smg.mp3"></audio>
-
-  
