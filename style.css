@@ -1,126 +1,23 @@
-/* Global Styles */
 body {
   margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #0e0e0e;
-  color: #ffffff;
-  line-height: 1.6;
-}
-
-/* Hero Section */
-.hero {
-  background: linear-gradient(to bottom right, #4f46e5, #9333ea);
+  background: #111;
+  color: white;
+  font-family: sans-serif;
   text-align: center;
-  padding: 80px 20px;
 }
 
-.hero h1 {
-  font-size: 3rem;
-  margin-bottom: 20px;
-  font-weight: 800;
+.title {
+  margin: 20px 0;
 }
 
-.hero p {
-  font-size: 1.25rem;
-  color: #ddd;
-  margin-bottom: 30px;
-}
-
-.play-button {
-  display: inline-block;
-  padding: 12px 28px;
-  background-color: #ef4444;
-  color: #fff;
-  border-radius: 999px;
-  font-weight: bold;
-  text-decoration: none;
-  transition: background 0.3s;
-}
-
-.play-button:hover {
-  background-color: #dc2626;
-}
-
-/* About Section */
-.about {
-  padding: 60px 20px;
-  background-color: #111827;
-}
-
-.about-container {
-  max-width: 960px;
+canvas {
+  border: 2px solid #555;
+  display: block;
   margin: 0 auto;
-  text-align: center;
+  background: #222;
 }
 
-.about h2 {
-  font-size: 2rem;
-  margin-bottom: 20px;
-}
-
-.about p {
-  color: #ccc;
-  margin-bottom: 40px;
-}
-
-.controls {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-}
-
-.control-box {
-  background-color: #1f2937;
-  padding: 20px;
-  border-radius: 12px;
-  width: 300px;
-  text-align: left;
-}
-
-.control-box h3 {
-  font-size: 1.2rem;
-  margin-bottom: 10px;
-}
-
-.control-box ul {
-  list-style: disc;
-  margin-left: 20px;
-  color: #aaa;
-}
-
-/* Game Section */
-.game {
-  padding: 60px 20px;
-  background-color: #000;
-  text-align: center;
-}
-
-.game h2 {
-  font-size: 2rem;
-  margin-bottom: 20px;
-}
-
-.game-box {
-  border: 4px solid #333;
-  background-color: #1f2937;
-  border-radius: 12px;
-  padding: 40px;
-  max-width: 960px;
-  margin: 0 auto;
-  aspect-ratio: 16 / 9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #888;
-  font-size: 1.2rem;
-}
-
-/* Footer */
-footer {
-  background-color: #1f2937;
-  text-align: center;
-  padding: 20px;
-  font-size: 0.9rem;
-  color: #888;
+.instructions {
+  margin-top: 10px;
+  color: #bbb;
 }
